@@ -1,28 +1,24 @@
-reactivity = require 'reactivity'
+util = require './util'
+
 ###
 http://api.jquery.com/is/
 ###
-module.exports = ( $ ) ->
 
+setup_notifier = ( $, type ) ->
+    switch type
+      when ':checked'
+        util.notifevents $, ['change']
+      when ':focus'
+        util.notifevents $, ['focus', 'blur']
+
+_is = ( $, type ) ->
+  setup_notifier $, type
+  $.is type
+
+_is.override = ( $ ) ->
   old = $.fn.is
-
   $.fn.is = ->
-
-    if reactivity.active()
-      
-      switch arguments[0]
-        
-        when ':checked'
-          notifier = reactivity()
-          @on 'change', notifier
-          notifier.once 'destroy', => @off 'change', notifier
-
-        when ':focus'
-          notifier = reactivity()
-          @on 'focus', notifier
-          @on 'blur', notifier
-          notifier.once 'destroy', =>
-            @off 'focus', notifier
-            @off 'blur', notifier
-
+    setup_notifier @, arguments[0]
     old.apply @, arguments
+
+module.exports = _is

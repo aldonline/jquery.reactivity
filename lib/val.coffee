@@ -1,26 +1,21 @@
-reactivity = require 'reactivity'
+util       = require './util'
+
 ###
 http://api.jquery.com/val/
 ###
-module.exports = ( $ ) ->
+setup_notifier = ( ctx ) -> util.notifevents ctx, ['change', 'input']
 
+val = ( $ ) ->
+  res = $.val()
+  setup_notifier $
+  res
+
+val.override = ( $ ) ->
   old = $.fn.val
-
   $.fn.val = ->
-
     res = old.apply @, arguments
-
     if arguments.length is 0 # only reads are reactive
-    
-      if reactivity.active()
-
-        notifier = reactivity()
-        @on 'change', notifier
-        @on 'input', notifier
-
-        notifier.once 'destroy', =>
-    
-          @off 'change', notifier    
-          @off 'input', notifier
-    
+      setup_notifier @
     res
+
+module.exports = val

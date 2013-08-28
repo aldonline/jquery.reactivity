@@ -1,18 +1,17 @@
 chai = require 'chai'
-chai.should()
-
-x = require '../lib/is'
-$ = require 'jquery'
+should = chai.should()
 reactivity = require 'reactivity'
 
-# override
-x $
+jquery_factory = require './util/jquery_factory'
 
+x = require '../lib/is'
+$ = jquery_factory()
+x.override $
 
 describe.skip '$.is(":focus")', ->
 
   it 'should work', (done) ->
-  
+
     e = $('<input>')
     e.attr type: 'text'
 
@@ -26,7 +25,6 @@ describe.skip '$.is(":focus")', ->
       done yes
 
 
-
 describe '$.is(":checked")', ->
 
   it 'should work', ->
@@ -38,4 +36,4 @@ describe '$.is(":checked")', ->
 
     e[0].checked = yes
 
-    e.is(':checked').should.equal yes    
+    e.is(':checked').should.equal yes
